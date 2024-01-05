@@ -30,6 +30,34 @@ namespace Weather
         public string Sunset { get; set; }
     }
 
+    public class Forecast
+    {
+        [JsonProperty("forecastday")]
+        public List<ForecastDay> ForecastDay { get; set; }
+    }
+
+    public class ForecastDay
+    {
+        [JsonProperty("date")]
+        public string Date { get; set; }
+
+        public Day Day { get; set; }
+
+    }
+
+    public class Day
+    {
+        [JsonProperty("mintemp_c")]
+        public double MinTemp { get; set; }
+
+        [JsonProperty("maxtemp_c")]
+        public double MaxTemp { get; set; }
+
+        [JsonProperty("condition")]
+
+        public Condition Condition { get; set; }
+    }
+
     public class Current
     {
         [JsonProperty("temp_c")]
@@ -40,13 +68,25 @@ namespace Weather
 
         public Condition Condition { get; set; }
 
+        [JsonProperty("pressure_mb")]
+
+        public double Pressure { get; set; }
+
         [JsonProperty("wind_kph")]
 
         public double WindSpeed { get; set; }
 
+        [JsonProperty("wind_dir")]
+
+        public string WindDirection { get; set; }
+
         [JsonProperty("humidity")]
 
         public double Humidity { get; set; }
+
+        [JsonProperty("vis_km")]
+
+        public double Visibility { get; set; }
 
         [JsonProperty("uv")]
 
@@ -82,5 +122,12 @@ namespace Weather
         [JsonProperty("astronomy")]
 
         public Astronomy Astronomy { get; set; }
+    }
+
+    public class FutureData
+    {
+        [JsonProperty("forecast")]
+
+        public Forecast Forecast { get; set; }
     }
 }

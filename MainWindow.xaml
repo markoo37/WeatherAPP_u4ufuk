@@ -16,17 +16,21 @@
         <!--Left Side-->
         <Border CornerRadius="10,0,0,0">
             <Border.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#FFA28F8F" Offset="0"/>
-                    <GradientStop Color="#FF483030" Offset="1"/>
+                <LinearGradientBrush>
+                    <GradientStop Color="Black" Offset="0.993"/>
+                    <GradientStop Color="#FFE0FFDC" Offset="0"/>
                 </LinearGradientBrush>
             </Border.Background>
             <StackPanel>
 
-                <Image Source="/Images/close.png" Height="25" HorizontalAlignment="Left" Margin="10 10 0 0" OpacityMask="Red"/>
+
+
+                <Ellipse x:Name="closeBtn" Fill="Red" Height="15" Width="15" HorizontalAlignment="Left" Margin="10 10 0 0" MouseLeftButtonDown="close"/>
+
+
 
                 <!--TextBox Search-->
-                <Border Background="white" BorderBrush="#d9d9d9" BorderThickness="1" CornerRadius="15" HorizontalAlignment="Center" Width="200" Margin="0 50 0 50">
+                <Border Background="white" BorderBrush="#d9d9d9" BorderThickness="1" CornerRadius="15" HorizontalAlignment="Center" Width="200" Margin="0 50 0 20">
                     <Grid Margin="7 7">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
@@ -38,7 +42,8 @@
                         <TextBox
                             Background="White"
                             
-                            Tag="City name"
+                            
+                            
                             x:Name="cityTxtName"
                             FontFamily="Segoe UI Semibold"
                             Style="{StaticResource textBox}"
@@ -52,81 +57,76 @@
                 <Button
                     
                     Height="52"
-                    
+                    Margin="0 0 0 30"
                     Width="200"
-                    Margin="10"
+                    
                     x:Name="btnGetWeather"
-                    Content="Check Weather"
+                    Content="Check"
                     Click="btnGetWeather_Click"
                     FontSize="18"
                     FontFamily="Segoe UI Semibold"
                     Style="{StaticResource button}" FontWeight="Normal"
+                    Foreground="Black"
                     >
                     <Button.Background>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <GradientStop Color="#FF2F0B00"/>
-                            <GradientStop Color="#FF5A3E35" Offset="1"/>
+                            <GradientStop Color="#FFD8E6CC"/>
+                            <GradientStop Color="White" Offset="1"/>
                         </LinearGradientBrush>
                     </Button.Background>
                 </Button>
 
+                <Border x:Name="borderLabel" Visibility="Hidden" CornerRadius="15" Background="Black" Margin="20 10 20 0">
+                    <Border CornerRadius="15" Padding="0 20">
+                        <Border.Background>
+                            <ImageBrush ImageSource="/Images/q1.jpg" Stretch="Fill" Opacity="0.3"/>
+                        </Border.Background>
+
+                        <Label x:Name="lblCityName" Content="..." Foreground="#FFFFFF" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontSize="25" FontFamily="Segoe UI Semibold"/>
+                    </Border>
+                </Border>
 
 
-                <StackPanel Margin="20 0 20 0">
-                    <Image x:Name="imageWeatherIcon" Width="100" HorizontalAlignment="Left" />
-                    <Label x:Name="lblTemperature" Content="" Foreground="White" FontSize="46" Margin="0 10 0 0" FontFamily="Segoe UI Light"/>
-                    <Label Foreground="White" x:Name="lblCondition" Content="" FontSize="14" FontWeight="SemiBold" Margin="0 0 0 0" FontFamily="Segoe UI Semibold" Width="205"/>
-                    <Separator x:Name="detailSeparator" Visibility="Hidden" Background="#dadada" Margin="3 30 40 30" Height="0.8"/>
+
+                <StackPanel Margin="20 20 20 0" VerticalAlignment="Center">
+                    <Image x:Name="imageWeatherIcon" Width="100" HorizontalAlignment="Center" />
+                    <Label x:Name="lblTemperature" Content="" Foreground="White" FontSize="46" Margin="0 10 0 0" FontFamily="Segoe UI Light" HorizontalAlignment="Center"/>
+                    <Label Foreground="White" x:Name="lblCondition" Content="" FontSize="14" FontWeight="SemiBold" FontFamily="Segoe UI Semibold" Width="102" HorizontalAlignment="Center" Height="33"/>
+                    <Separator x:Name="detailSeparator" Visibility="Hidden" Background="#dadada" Height="0.8"/>
 
                     <Label x:Name="lblClock" Content="" Foreground="White" FontSize="18" FontWeight="SemiBold" Margin="0 20 0 0" FontFamily="Segoe UI Semilight"/>
 
-                    <StackPanel Orientation="Horizontal" Margin="0 15 0 77"/>
+
                 </StackPanel>
 
-                <Border x:Name="borderLabel" Visibility="Hidden" CornerRadius="15" Background="Black" Margin="20 -50 0 0">
-                    <Border CornerRadius="15" Padding="0 20">
-                        <Border.Background>
-                            <ImageBrush ImageSource="/Images/q1.jpg" Stretch="Fill" Opacity="0.65"/>
-                        </Border.Background>
 
-                        <Label x:Name="lblCityName" Content="..." Foreground="#FFFFFF" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontSize="14" FontFamily="Segoe UI Semibold"/>
-                    </Border>
-                </Border>
 
             </StackPanel>
         </Border>
 
         <!--Right Side-->
-        <Border Grid.Column="1" CornerRadius="0,10,10,0" MouseDown="Border_MouseDown" >
-            <Border.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#FFA28F8F" Offset="0"/>
-                    <GradientStop Color="#FF483030" Offset="1"/>
-                </LinearGradientBrush>
-            </Border.Background>
+        <Border Grid.Column="1" CornerRadius="0,10,10,0" MouseDown="Border_MouseDown" Background="#FFE1FFE8" >
             <StackPanel>
                 <!--Top Menu-->
                 <Grid Margin="40 30 40 10">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <Label Content="Today" Style="{StaticResource textButton}" FontFamily="Segoe UI Semibold"/>
-                        <Label Content="Week" Style="{StaticResource activeTextButton}" Margin="15 0 0 0" FontFamily="Segoe UI Semibold"/>
-                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"/>
                 </Grid>
+                <TextBlock TextAlignment="Center" Text="Future" FontSize="16" FontWeight="SemiBold" FontFamily="Segoe UI Semibold" Width="308"/>
 
                 <!--Week Days-->
                 <StackPanel Orientation="Horizontal" Margin="40 20 0 20">
-                    <uc:CardDay Day="Sun" MaxNum="16°" MinNum="3°" Source="/Images/sun.png" FontFamily="Segoe UI Semibold"/>
-                    <uc:CardDay Day="Mon" MaxNum="15°" MinNum="6°" Source="/Images/sun_cloud.png" FontFamily="Segoe UI Semibold"/>
-                    <uc:CardDay Day="Tue" MaxNum="1°" MinNum="-10°" Source="/Images/snow.png" FontFamily="Segoe UI Semibold"/>
-                    <uc:CardDay Day="Wed" MaxNum="7°" MinNum="-1°" Source="/Images/rain.png" FontFamily="Segoe UI Semibold"/>
-                    <uc:CardDay Day="Thu" MaxNum="14°" MinNum="3°" Source="/Images/rain_cloud.png" FontFamily="Segoe UI Semibold"/>
-                    <uc:CardDay Day="Fri" MaxNum="26°" MinNum="10°" Source="/Images/sun.png" FontFamily="Segoe UI Semibold"/>
-                    <uc:CardDay Day="Sat" MaxNum="3°" MinNum="-3°" Source="/Images/storm.png" FontFamily="Segoe UI Semibold"/>
+                    <uc:CardDay Visibility="Hidden" x:Name="day1" Day="Sun" MaxNum="" MinNum="" FontFamily="Segoe UI Semibold"/>
+                    <uc:CardDay Visibility="Hidden" x:Name="day2" Day="Mon" MaxNum="" MinNum="" FontFamily="Segoe UI Semibold"/>
+                    <uc:CardDay Visibility="Hidden" x:Name="day3" Day="Tue" MaxNum="" MinNum="" FontFamily="Segoe UI Semibold"/>
+                    <uc:CardDay Visibility="Hidden" x:Name="day4" Day="Wed" MaxNum="" MinNum="" FontFamily="Segoe UI Semibold"/>
+                    <uc:CardDay Visibility="Hidden" x:Name="day5" Day="Thu" MaxNum="" MinNum="" FontFamily="Segoe UI Semibold"/>
+                    <uc:CardDay Visibility="Hidden" x:Name="day6" Day="Fri" MaxNum="" MinNum="" FontFamily="Segoe UI Semibold"/>
+                    <uc:CardDay Visibility="Hidden" x:Name="day7" Day="Sat" MaxNum="" MinNum="" FontFamily="Segoe UI Semibold"/>
                 </StackPanel>
 
-                <TextBlock Text="Today's Highlights" FontSize="16" FontWeight="SemiBold" Margin="40 10 0 10"/>
+                <TextBlock Text="Today's Highlights" FontSize="16" FontWeight="SemiBold" Margin="40 10 0 10" FontFamily="Segoe UI Semibold"/>
 
                 <!--Widget Section-->
                 <WrapPanel Margin="40 0 0 0">
@@ -150,14 +150,13 @@
                                 <TextBlock Text="km/h" FontSize="14" VerticalAlignment="Bottom" Margin="10 0 0 3" FontFamily="Segoe UI Semibold"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                                <Image Source="/Images/dir.png" Width="25" Height="25" Margin="0 0 10 0"/>
-                                <TextBlock Text="WSW" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"/>
+                                <TextBlock x:Name="windDirectionText" Text="" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"/>
                             </StackPanel>
                         </Grid>
                     </Border>
 
                     <!--Widget 3-->
-                    <Border Style="{StaticResource widgetBorder}" BorderBrush="#03A9F4">
+                    <Border Style="{StaticResource widgetBorder}">
                         <StackPanel>
                             <TextBlock Text="Sunrise Sunset" Style="{StaticResource titleText}" FontFamily="Segoe UI Semibold"/>
 
@@ -185,10 +184,7 @@
                                 <TextBlock x:Name="humidityText" Text="-" FontSize="34" FontWeight="SemiBold" FontFamily="Segoe UI Semibold"/>
                                 <TextBlock Text="%" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3" FontFamily="Segoe UI Semibold"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                                <TextBlock Text="Normal" FontWeight="SemiBold" FontFamily="Segoe UI Semibold"/>
-                                <Image Source="/Images/like.png" Width="18" Height="18" Margin="10 0 0 0"/>
-                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"/>
 
                             <Slider x:Name="humiditySlider" Style="{DynamicResource SliderStyle1}" Value="5.5" Maximum="10" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="90"/>
                         </Grid>
@@ -199,32 +195,31 @@
                         <Grid>
                             <TextBlock Text="Visibility" Style="{StaticResource titleText}" FontFamily="Segoe UI Semibold"/>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="5.2" FontSize="34" FontWeight="SemiBold" FontFamily="Segoe UI Semibold"/>
+                                <TextBlock x:Name="txtVisibility" Text="-" FontSize="34" FontWeight="SemiBold" FontFamily="Segoe UI Semibold"/>
                                 <TextBlock Text="km" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3" FontFamily="Segoe UI Semibold"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                                <TextBlock Text="Average" FontWeight="SemiBold" FontFamily="Segoe UI Semibold"/>
-                                <Image Source="/Images/happy.png" Width="18" Height="18" Margin="10 0 0 0"/>
-                            </StackPanel>
-
-                            <Slider Style="{DynamicResource SliderStyle1}" Value="4" Maximum="10" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="90"/>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"/>
                         </Grid>
                     </Border>
 
                     <!--Widget 6-->
                     <Border Style="{StaticResource widgetBorder}">
                         <Grid>
-                            <TextBlock Text="Air Quality" Style="{StaticResource titleText}" FontFamily="Segoe UI Semibold"/>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="105" FontSize="34" FontWeight="SemiBold" FontFamily="Segoe UI Semibold"/>
-                                <TextBlock Text="aqi" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3" FontFamily="Segoe UI Semibold"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="7*"/>
+                                <RowDefinition Height="141*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Pressure" Style="{StaticResource titleText}" FontFamily="Segoe UI Semibold" Grid.RowSpan="2"/>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,44,0,0" Grid.Row="1">
+                                <TextBlock x:Name="pressureLbl" Text="-" FontSize="34" FontWeight="SemiBold" FontFamily="Segoe UI Semibold"/>
+                                <TextBlock Text="mb" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3" FontFamily="Segoe UI Semibold"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,123,0,0" Grid.Row="1">
                                 <TextBlock Text="Unhealthy" FontWeight="SemiBold" FontFamily="Segoe UI Semibold"/>
                                 <Image Source="/Images/dislike.png" Width="18" Height="18" Margin="10 0 0 0"/>
                             </StackPanel>
 
-                            <Slider Style="{DynamicResource SliderStyle1}" Value="7" Maximum="10" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="90"/>
+                            <Slider Style="{DynamicResource SliderStyle1}" Value="7" Maximum="10" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="90" Grid.Row="1"/>
                         </Grid>
                     </Border>
 
