@@ -124,6 +124,21 @@ namespace Weather
         public Astronomy Astronomy { get; set; }
     }
 
+    public class ForecastData
+    {
+        [JsonProperty("location")]
+
+        public Location Location { get; set; }
+
+        [JsonProperty("current")]
+
+        public Current Current { get; set; }
+
+        [JsonProperty("forecast")]
+
+        public Forecast Forecast { get; set; }
+    }
+
     public class FutureData
     {
         [JsonProperty("forecast")]

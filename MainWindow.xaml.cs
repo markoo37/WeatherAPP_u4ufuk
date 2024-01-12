@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Newtonsoft.Json;
@@ -15,10 +17,6 @@ namespace Weather
     {
         private readonly string apiKey = "b5b4fb118caa4bf4b06223315240101";
         private string cityName;
-
-        
-        
-
 
         public MainWindow()
         {
@@ -41,18 +39,20 @@ namespace Weather
 
         private async void btnGetWeather_Click(object sender, RoutedEventArgs e)
         {
+            
             cityName = cityTxtName.Text.Trim();
             cityTxtName.Text = "";
             if (string.IsNullOrEmpty(cityName))
             {
-                MessageBox.Show("Please enter a city name");
+                MessageBox.Show("Kérem írjon be egy városnevet!");
                 return;
             }
 
             string apiUrl = $"http://api.weatherapi.com/v1/current.json?key={apiKey}&q={cityName}";
             string apiUrlAstronomy = $"http://api.weatherapi.com/v1/astronomy.json?key={apiKey}&q={cityName}";
+            string apiForecastUrl = $"http://api.weatherapi.com/v1/forecast.json?key={apiKey}&q={cityName}&days=8&aqi=no&alerts=no";
 
-
+            int errorCount = 0;
 
 
             try
@@ -76,7 +76,8 @@ namespace Weather
             catch (WebException ex)
             {
 
-                MessageBox.Show("An error occured while fetching weather data: " + ex.Message);
+                MessageBox.Show("Hiba lépett fel az időjárás lekérdezése közben: " + ex.Message);
+                errorCount++;
             }
 
             try
@@ -99,10 +100,13 @@ namespace Weather
             }
             catch (WebException ex)
             {
-
-                MessageBox.Show("An error occured while fetching weather data: " + ex.Message);
+                if (errorCount == 0)
+                {
+                    MessageBox.Show("Hiba lépett fel az időjárás lekérdezése közben: " + ex.Message);
+                }
+                
+                errorCount++;
             }
-
 
             try
             {
@@ -126,7 +130,7 @@ namespace Weather
 
 
                 for (int i = 1; i < 8; i++)
-                {                    
+                {
                     //{ currentDay.AddDays(i).ToString("yyyy-MM-dd")}
                     string apiUrlFuture = $"http://api.weatherapi.com/v1/future.json?key={apiKey}&q={cityName}&dt={currentDay.AddDays(13 + i).ToString("yyyy-MM-dd")}";
                     HttpWebRequest request = WebRequest.CreateHttp(apiUrlFuture);
@@ -140,8 +144,34 @@ namespace Weather
                             {
                                 string jsonResponse = reader.ReadToEnd();
                                 FutureData futureData = JsonConvert.DeserializeObject<FutureData>(jsonResponse);
-                                DisplayFutureData(futureData, i, currentDay.AddDays(13 + i).ToString("yyyy-MM-dd"));
+                                futureDatas.Add(futureData);
+                                //DisplayFutureData(futureData, i, currentDay.AddDays(13 + i).ToString("yyyy-MM-dd"));
                             }
+                        }
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+
+                MessageBox.Show("Hiba lépett fel az időjárás lekérdezése közben: " + ex.Message);
+            }
+
+
+            try
+            {
+                HttpWebRequest request = WebRequest.CreateHttp(apiForecastUrl);
+                request.Method = "GET";
+
+                using (WebResponse response = await request.GetResponseAsync())
+                {
+                    using (Stream stream = response.GetResponseStream())
+                    {
+                        using (StreamReader reader = new StreamReader(stream))
+                        {
+                            string jsonResponse = reader.ReadToEnd();
+                            ForecastData forecastData = JsonConvert.DeserializeObject<ForecastData>(jsonResponse);
+                            DisplayForecastData(forecastData);
                         }
                     }
                 }
@@ -149,12 +179,138 @@ namespace Weather
             }
             catch (WebException ex)
             {
+                
+                if (errorCount == 0)
+                {
+                    MessageBox.Show("Hiba lépett fel az időjárás lekérdezése közben: " + ex.Message);
+                }
 
-                MessageBox.Show("An error occured while fetching forecast weather data: " + ex.Message);
+               
+                errorCount++;
+            }
+            if (errorCount == 0)
+            {
+                cardStackPanel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                cardStackPanel.Visibility = Visibility.Hidden;
+            }
+
+            pickerPanel.Visibility = Visibility.Visible;
+            infoStackPanel.Visibility = Visibility.Visible;
+        }
+
+        private void DisplayForecastData(ForecastData futureData)
+        {
+            BitmapImage weatherIcon = new BitmapImage();
+            for (int i = 1; i < futureData.Forecast.ForecastDay.Count; i++)
+            {
+                ForecastDay forecastDay = futureData.Forecast.ForecastDay[i];
+                switch (i)
+                {
+                    case 1:
+                        day1.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day1.MinNum = forecastDay.Day.MinTemp.ToString();
+
+                        day1.Day = "Holnap";
+
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day1.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 2:
+                        day2.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day2.MinNum = forecastDay.Day.MinTemp.ToString();
+
+                        day2.Day = "Holnapután";
+
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day2.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 3:
+                        day3.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day3.MinNum = forecastDay.Day.MinTemp.ToString();
+
+                        day3.Day = FirstLetterToUpper(DateTime.Parse(forecastDay.Date).ToString("dddd"));
+
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day3.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 4:
+                        day4.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day4.MinNum = forecastDay.Day.MinTemp.ToString();
+
+                        day4.Day = FirstLetterToUpper(DateTime.Parse(forecastDay.Date).ToString("dddd"));
+
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day4.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 5:
+                        day5.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day5.MinNum = forecastDay.Day.MinTemp.ToString();
+
+                        day5.Day = FirstLetterToUpper(DateTime.Parse(forecastDay.Date).ToString("dddd"));
+
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day5.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 6:
+                        day6.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day6.MinNum = forecastDay.Day.MinTemp.ToString();
+
+                        day6.Day = FirstLetterToUpper(DateTime.Parse(forecastDay.Date).ToString("dddd"));
+
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day6.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 7:
+                        day7.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day7.MinNum = forecastDay.Day.MinTemp.ToString();
+
+                        
+                        day7.Day = FirstLetterToUpper(DateTime.Parse(forecastDay.Date).ToString("dddd"));
+
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day7.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    default:
+                        break;
+                }
             }
             
         }
 
+        private string FirstLetterToUpper(string str)
+        {
+            if (str == null)
+                return null;
+
+            if (str.Length > 1)
+                return char.ToUpper(str[0]) + str.Substring(1);
+
+            return str.ToUpper();
+        }
 
         private void DisplayAstronomyData(AstronomyData astronomyData)
         {
@@ -164,112 +320,105 @@ namespace Weather
             lblSunset.Text = astronomyData.Astronomy.Astro.Sunset;
         }
 
-        private void DisplayFutureData(FutureData futureData, int daysFromNow, string date)
+        private List<FutureData> futureDatas = new List<FutureData>();
+
+
+        private void DisplayFutureData()
         {
-            ForecastDay forecastDay = futureData.Forecast.ForecastDay.First();
-            BitmapImage weatherIcon = new BitmapImage();
-            switch (daysFromNow)
+            for (int i = 0; i < futureDatas.Count; i++)
             {
-                case 1:
-                    day1.Visibility = Visibility.Visible;
-                    day1.MaxNum = forecastDay.Day.MaxTemp.ToString();
-                    day1.MinNum = forecastDay.Day.MinTemp.ToString();
+                ForecastDay forecastDay = futureDatas[i].Forecast.ForecastDay.First();
+                BitmapImage weatherIcon = new BitmapImage();
 
-                    day1.Day = date;
+                switch (i + 1)
+                {
+                    case 1:
+                        day1.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day1.MinNum = forecastDay.Day.MinTemp.ToString();
 
-                    weatherIcon.BeginInit();
-                    weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
-                    weatherIcon.EndInit();
-                    day1.Source = weatherIcon;
+                        day1.Day = DateTime.Parse(forecastDay.Date).ToString("m");
 
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day1.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 2:
+                        day2.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day2.MinNum = forecastDay.Day.MinTemp.ToString();
 
-                    break;
-                case 2:
-                    day2.Visibility = Visibility.Visible;
+                        day2.Day = DateTime.Parse(forecastDay.Date).ToString("m");
 
-                    day2.MaxNum = forecastDay.Day.MaxTemp.ToString();
-                    day2.MinNum = forecastDay.Day.MinTemp.ToString();
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day2.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 3:
+                        day3.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day3.MinNum = forecastDay.Day.MinTemp.ToString();
 
-                    day2.Day = date;
+                        day3.Day = DateTime.Parse(forecastDay.Date).ToString("m");
 
-                    weatherIcon.BeginInit();
-                    weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
-                    weatherIcon.EndInit();
-                    day2.Source = weatherIcon;
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day3.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 4:
+                        day4.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day4.MinNum = forecastDay.Day.MinTemp.ToString();
 
-                    break;
-                case 3:
-                    day3.Visibility = Visibility.Visible;
+                        day4.Day = DateTime.Parse(forecastDay.Date).ToString("m");
 
-                    day3.MaxNum = forecastDay.Day.MaxTemp.ToString();
-                    day3.MinNum = forecastDay.Day.MinTemp.ToString();
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day4.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 5:
+                        day5.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day5.MinNum = forecastDay.Day.MinTemp.ToString();
 
-                    day3.Day = date;
+                        day5.Day = DateTime.Parse(forecastDay.Date).ToString("m");
 
-                    weatherIcon.BeginInit();
-                    weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
-                    weatherIcon.EndInit();
-                    day3.Source = weatherIcon;
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day5.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 6:
+                        day6.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day6.MinNum = forecastDay.Day.MinTemp.ToString();
 
-                    break;
-                case 4:
-                    day4.Visibility = Visibility.Visible;
+                        day6.Day = DateTime.Parse(forecastDay.Date).ToString("m");
 
-                    day4.Day = date;
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day6.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    case 7:
+                        day7.MaxNum = forecastDay.Day.MaxTemp.ToString();
+                        day7.MinNum = forecastDay.Day.MinTemp.ToString();
 
-                    day4.MaxNum = forecastDay.Day.MaxTemp.ToString();
-                    day4.MinNum = forecastDay.Day.MinTemp.ToString();
+                        day7.Day = DateTime.Parse(forecastDay.Date).ToString("m");
 
-                    weatherIcon.BeginInit();
-                    weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
-                    weatherIcon.EndInit();
-                    day4.Source = weatherIcon;
-
-                    break;
-                case 5:
-                    day5.Visibility = Visibility.Visible;
-
-                    day5.MaxNum = forecastDay.Day.MaxTemp.ToString();
-                    day5.MinNum = forecastDay.Day.MinTemp.ToString();
-
-                    day5.Day = date;
-
-                    weatherIcon.BeginInit();
-                    weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
-                    weatherIcon.EndInit();
-                    day5.Source = weatherIcon;
-
-                    break;
-                case 6:
-                    day6.Visibility = Visibility.Visible;
-
-                    day6.MaxNum = forecastDay.Day.MaxTemp.ToString();
-                    day6.MinNum = forecastDay.Day.MinTemp.ToString();
-
-                    day6.Day = date;
-
-                    weatherIcon.BeginInit();
-                    weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
-                    weatherIcon.EndInit();
-                    day6.Source = weatherIcon;
-
-                    break;
-                case 7:
-                    day7.Visibility = Visibility.Visible;
-
-                    day7.MaxNum = forecastDay.Day.MaxTemp.ToString();
-                    day7.MinNum = forecastDay.Day.MinTemp.ToString();
-
-                    day7.Day = date;
-
-                    weatherIcon.BeginInit();
-                    weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
-                    weatherIcon.EndInit();
-                    day7.Source = weatherIcon;
-
-                    break;
-                default:
-                    break;
+                        weatherIcon.BeginInit();
+                        weatherIcon.UriSource = new Uri("http:" + forecastDay.Day.Condition.Icon);
+                        weatherIcon.EndInit();
+                        day7.Source = weatherIcon;
+                        weatherIcon = new BitmapImage();
+                        break;
+                    default:
+                        break;
+                }
             }
         }
         private void DisplayWeatherData(WeatherData weatherData)
@@ -293,19 +442,23 @@ namespace Weather
             //Pressure
 
             pressureLbl.Text = weatherData.Current.Pressure.ToString();
+            pressureSlider.Value = weatherData.Current.Pressure - 300;
+            pressureSlider.IsEnabled = false;
 
             //humidity
 
             humidityText.Text = weatherData.Current.Humidity.ToString();
             int humidity = int.Parse(weatherData.Current.Humidity.ToString());
             humiditySlider.Value = humidity/10;
+            humiditySlider.IsEnabled = false;
 
             txtVisibility.Text = weatherData.Current.Visibility.ToString();
 
             //uv
 
             uvSlider.Value = weatherData.Current.UV;
-            uvText.Text = $"Avarage UV index is {weatherData.Current.UV}";
+            uvSlider.IsEnabled = false;
+            uvText.Text = $"A napi átlag UV index {weatherData.Current.UV}";
 
             //image
 
@@ -319,6 +472,54 @@ namespace Weather
         private void close(object sender, MouseButtonEventArgs e)
         {
             this.Close();
+        }
+
+        private async void PresentThisWeek(object sender, MouseButtonEventArgs e)
+        {
+
+
+
+            string apiForecastUrl = $"http://api.weatherapi.com/v1/forecast.json?key={apiKey}&q={cityName}&days=8&aqi=no&alerts=no";
+            try
+            {
+                HttpWebRequest request = WebRequest.CreateHttp(apiForecastUrl);
+                request.Method = "GET";
+
+                using (WebResponse response = await request.GetResponseAsync())
+                {
+                    using (Stream stream = response.GetResponseStream())
+                    {
+                        using (StreamReader reader = new StreamReader(stream))
+                        {
+                            string jsonResponse = reader.ReadToEnd();
+                            ForecastData forecastData = JsonConvert.DeserializeObject<ForecastData>(jsonResponse);
+                            DisplayForecastData(forecastData);
+                        }
+                    }
+                }
+
+            }
+            catch (WebException ex)
+            {
+
+                MessageBox.Show("Hiba lépett fel az időjárás lekérdezése közben: " + ex.Message);
+            }
+
+            thisWeekLabel.Foreground = Brushes.Blue;
+            futureLabel.Foreground = Brushes.Black;
+        }
+
+        private void PresentFuture(object sender, MouseButtonEventArgs e)
+        {
+            DisplayFutureData();
+
+            thisWeekLabel.Foreground = Brushes.Black;
+            futureLabel.Foreground = Brushes.Blue;
+        }
+
+        private void minimizeBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
         }
     }
 }

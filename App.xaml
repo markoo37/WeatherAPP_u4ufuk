@@ -31,7 +31,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Label">
-                        <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="#333333">
+                        <TextBlock FontSize="16" FontWeight="SemiBold">
                             <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </TextBlock>
                     </ControlTemplate>
@@ -43,9 +43,9 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="Label">
-                                <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="#333333">
+                                <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="Blue">
                                     <TextBlock.TextDecorations>
-                                        <TextDecoration Location="Underline" PenOffset="3" />
+                                        <TextDecoration Location="Underline" PenOffset="2" />
                                     </TextBlock.TextDecorations>
                                     
                                         <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
