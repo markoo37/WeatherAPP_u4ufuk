@@ -199,6 +199,8 @@ namespace Weather
 
             pickerPanel.Visibility = Visibility.Visible;
             infoStackPanel.Visibility = Visibility.Visible;
+            thisWeekLabel.Foreground = Brushes.Blue;
+            futureLabel.Foreground = Brushes.Black;
         }
 
         private void DisplayForecastData(ForecastData futureData)
