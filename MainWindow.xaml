@@ -28,7 +28,7 @@
                     <Ellipse x:Name="closeBtn" Fill="Red" Height="15" Width="15" HorizontalAlignment="Left" Margin="10 10 0 0" MouseLeftButtonDown="close" ToolTipService.ShowDuration="5000">
                         <Ellipse.ToolTip>
                             <ToolTip>
-                                <TextBlock FontFamily="Segoe UI Semibold" FontWeight="Bold">Close</TextBlock>
+                                <TextBlock FontFamily="Segoe UI Semibold" FontWeight="Bold">Bezárás</TextBlock>
                             </ToolTip>
                         </Ellipse.ToolTip>    
                     </Ellipse>
@@ -36,7 +36,7 @@
                     <Ellipse x:Name="minimizeBtn" Fill="Black" Height="15" Width="15" HorizontalAlignment="Left" Margin="10 10 0 0" MouseLeftButtonDown="minimizeBtn_MouseLeftButtonDown" ToolTipService.ShowDuration="5000">
                         <Ellipse.ToolTip>
                             <ToolTip>
-                                <TextBlock FontFamily="Segoe UI Semibold" FontWeight="Bold">Minimize</TextBlock>
+                                <TextBlock FontFamily="Segoe UI Semibold" FontWeight="Bold">Tálcára</TextBlock>
                             </ToolTip>
                         </Ellipse.ToolTip>
                     </Ellipse>
